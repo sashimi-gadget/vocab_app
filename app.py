@@ -8,6 +8,7 @@ import csv
 import io
 from flask import Response
 from datetime import date
+_database_initialized = False
 
 app = Flask(__name__)
 
@@ -27,9 +28,13 @@ class Word(db.Model):
     wrong_count = db.Column(db.Integer, default=0)
     is_done = db.Column(db.Boolean, default=False)
 
-@app.before_first_request
-def create_tables():
-    db.create_all()
+@app.before_request
+def setup_db():
+    global _database_initialized
+    if not _database_initialized:
+        # ここに最初の1回だけやりたい処理を書く
+        # db.create_all() など
+        _database_initialized = True
 
 @app.route('/') #一覧
 def index():
