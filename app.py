@@ -27,6 +27,10 @@ class Word(db.Model):
     wrong_count = db.Column(db.Integer, default=0)
     is_done = db.Column(db.Boolean, default=False)
 
+@app.before_first_request
+def create_tables():
+    db.create_all()
+
 @app.route('/') #一覧
 def index():
     words = Word.query.all()
