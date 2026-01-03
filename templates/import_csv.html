@@ -1,0 +1,16 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<h2>CSVインポート</h2>
+
+<form method="post" enctype="multipart/form-data">
+  <p>
+    <input type="file" name="csv_file" accept=".csv" required>
+  </p>
+  <button type="submit">インポート</button>
+</form>
+
+<p style="color:#666; font-size:13px;">
+  ※ CSV形式：english, meaning, part_of_speech, example
+</p>
+{% endblock %}

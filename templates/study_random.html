@@ -1,0 +1,51 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<h2>🎲 ランダム学習（未完了）</h2>
+
+<!-- 英単語を大きく表示 -->
+<div class="study-word">
+  {{ word.english }}
+</div>
+
+{% if word.example %}
+  <hr>
+  <p><strong>例文：</strong><br>{{ word.example }}</p>
+{% endif %}
+
+<!-- 回答フォーム -->
+<form method="post">
+  <label>
+    意味を入力：
+    <input type="text" name="answer" autofocus required>
+  </label>
+  <br><br>
+  <button type="submit">答え合わせ</button>
+</form>
+
+<!-- 結果表示 -->
+{% if result %}
+  <hr>
+
+  <p class="{% if '正解' in result %}result-ok{% else %}result-ng{% endif %}">
+    {{ result }}
+  </p>
+
+  <p>
+    正解：<strong>{{ word.meaning }}</strong>
+  </p>
+
+  <div style="margin-top: 20px;">
+    <a href="{{ url_for('study_random') }}" class="button">
+      ▶ 次の単語へ
+    </a>
+  </div>
+{% endif %}
+
+<!-- 戻るリンク -->
+<div style="margin-top: 30px;">
+  <a href="{{ url_for('index') }}">← 一覧に戻る</a>
+</div>
+
+{% endblock %}

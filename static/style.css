@@ -1,0 +1,361 @@
+/* 全体 */
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  background: #f5f7fa;
+  margin: 0;
+  color: #333;
+}
+
+/* ヘッダー */
+.header {
+  background: #2c3e50;
+  color: #fff;
+  padding: 15px 30px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.header h1 {
+  margin: 0;
+  font-size: 20px;
+}
+
+.header nav a {
+  color: #fff;
+  margin-left: 15px;
+  text-decoration: none;
+  font-weight: bold;
+}
+
+.header nav a:hover {
+  text-decoration: underline;
+}
+
+/* コンテナ */
+.container {
+  max-width: 900px;
+  margin: 30px auto;
+  background: #fff;
+  padding: 25px;
+  border-radius: 8px;
+}
+
+/* ===== テーブル全体 ===== */
+table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 14px;
+}
+
+th {
+  background: #f3f6fa;
+  color: #555;
+  font-weight: 600;
+  text-align: left;
+  padding: 12px;
+  border-bottom: 2px solid #e0e6ed;
+}
+
+td {
+  padding: 12px;
+  vertical-align: top;
+  border-bottom: 1px solid #eaeaea;
+}
+
+/* 行ホバー */
+tr:hover td {
+  background: #f9fbfd;
+}
+
+/* 英単語を目立たせる */
+td:first-child {
+  font-weight: 600;
+  font-size: 15px;
+}
+
+/* ボタン風リンク */
+a.button {
+  background: #3498db;
+  color: #fff;
+  padding: 6px 12px;
+  border-radius: 4px;
+  text-decoration: none;
+  font-size: 14px;
+}
+
+a.button:hover {
+  background: #2980b9;
+}
+
+/* フォーム */
+input[type="text"] {
+  width: 100%;
+  padding: 8px;
+  margin-top: 5px;
+}
+
+button {
+  background: #27ae60;
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+button:hover {
+  background: #1e8449;
+}
+
+/* 学習画面 */
+.study-word {
+  font-size: 28px;
+  font-weight: bold;
+  margin-bottom: 20px;
+}
+
+.result-ok {
+  color: #27ae60;
+  font-weight: bold;
+}
+
+.result-ng {
+  color: #c0392b;
+  font-weight: bold;
+}
+
+.badge {
+  display: inline-block;
+  padding: 4px 8px;
+  border-radius: 12px;
+  font-size: 12px;
+  font-weight: bold;
+  min-width: 48px;
+  text-align: center;
+  line-height: 1.4;
+}
+
+.badge-gray {
+  background: #ecf0f1;
+  color: #555;
+}
+
+.badge-green {
+  background: #e8f8f0;
+  color: #1e8449;
+}
+
+.badge-orange {
+  background: #fff4e6;
+  color: #d35400;
+}
+
+.action a {
+  margin-right: 6px;
+  padding: 5px 10px;
+  border-radius: 4px;
+  text-decoration: none;
+  font-size: 12px;
+  display: inline-block;
+  margin: 2px 4px;
+}
+
+.action a.study {
+  background: #3498db;
+  color: white;
+}
+
+.action a.done {
+  background: #27ae60;
+  color: white;
+}
+
+.action a.edit {
+  background: #95a5a6;
+  color: white;
+}
+
+.action a.delete {
+  background: #e74c3c;
+  color: white;
+}
+
+.example {
+  font-size: 13px;
+  line-height: 1.6;
+  color: #444;
+  word-break: break-word;
+}
+
+.word-table th:nth-child(1),
+.word-table td:nth-child(1) {
+  width: 120px; /* 英単語 */
+}
+
+.word-table th:nth-child(2),
+.word-table td:nth-child(2) {
+  width: 120px; /* 意味 */
+}
+
+.word-table th:nth-child(3),
+.word-table td:nth-child(3) {
+  width: 70px; /* 品詞 */
+  text-align: center;
+  white-space: nowrap;
+}
+
+.word-table th:nth-child(4),
+.word-table td:nth-child(4) {
+  width: 40%; /* 例文は広く */
+}
+
+.word-table th:nth-child(5),
+.word-table td:nth-child(5),
+.word-table th:nth-child(6),
+.word-table td:nth-child(6) {
+  width: 80px; /* 正答率・状態 */
+  text-align: center;
+}
+
+.word-table th:nth-child(7),
+.word-table td:nth-child(7) {
+  width: 200px; /* 操作 */
+}
+
+.word-table tr {
+  transition-property: background-color;
+  transition-duration: 0.15s;
+  transition-timing-function: ease;
+}
+
+.word-table tr:hover td {
+  background: #f6f9fc;
+}
+
+.action {
+  white-space: nowrap;
+}
+
+.done-row td {
+  opacity: 0.6;
+}
+
+.pos-badge {
+  display: inline-block;
+  padding: 4px 8px;
+  font-size: 12px;
+  border-radius: 12px;
+  background: #eef3f7;
+  white-space: nowrap;
+}
+
+/* ===== モバイル対応 ===== */
+@media screen and (max-width: 768px) {
+
+  /* テーブルをカード化 */
+  .word-table,
+  .word-table thead,
+  .word-table tbody,
+  .word-table th,
+  .word-table td,
+  .word-table tr {
+    display: block;
+  }
+
+  /* ヘッダー非表示 */
+  .word-table thead {
+    display: none;
+  }
+
+  /* 行をカード風に */
+  .word-table tr {
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    margin-bottom: 16px;
+    padding: 12px;
+    background: #fff;
+  }
+
+  .word-table td {
+    border: none;
+    padding: 6px 0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  /* ラベル表示 */
+  .word-table td::before {
+    content: attr(data-label);
+    font-weight: 600;
+    color: #555;
+    margin-right: 12px;
+    white-space: nowrap;
+  }
+
+  /* 例文は縦 */
+  .word-table td.example {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .word-table td.example::before {
+    margin-bottom: 4px;
+  }
+
+  /* 操作ボタンを中央寄せ */
+  .action {
+    text-align: center;
+  }
+
+  .action a {
+    margin: 4px;
+  }
+
+  .button {
+   display: block;
+   width: 100%;
+   margin-bottom: 8px;
+   text-align: center;
+  }
+}
+
+/* ===== モーダル ===== */
+.modal {
+  display: none;
+  position: fixed;
+  z-index: 999;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.5);
+}
+
+.modal-content {
+  background: #fff;
+  max-width: 400px;
+  margin: 20% auto;
+  padding: 20px;
+  border-radius: 10px;
+  font-size: 15px;
+  line-height: 1.6;
+  position: relative;
+}
+
+.close {
+  position: absolute;
+  top: 10px;
+  right: 14px;
+  font-size: 20px;
+  cursor: pointer;
+}
+
+.example-btn {
+  display: inline-block;
+  width: auto;
+  white-space: nowrap;
+}
+
+/* 例文セルだけ特別扱い */
+.example-cell {
+  display: block !important;
+}

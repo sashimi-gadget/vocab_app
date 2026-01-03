@@ -1,0 +1,33 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<form method="post">
+  <p>
+    英単語：<br>
+    <input type="text" name="english" required>
+  </p>
+
+  <p>
+    意味：<br>
+    <input type="text" name="meaning" required>
+  </p>
+
+  <p>
+    品詞：<br>
+    <select name="part_of_speech">
+      <option value="">-- 選択 --</option>
+      <option value="noun">名詞</option>
+      <option value="verb">動詞</option>
+      <option value="adjective">形容詞</option>
+      <option value="adverb">副詞</option>
+    </select>
+  </p>
+
+  <p>
+    例文：<br>
+    <input type="text" name="example">
+  </p>
+
+  <button type="submit">追加</button>
+</form>
+{% endblock %}

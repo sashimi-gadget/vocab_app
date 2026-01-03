@@ -1,0 +1,92 @@
+{% extends 'base.html' %}
+{% set pos_map = {
+  'noun': '名詞',
+  'verb': '動詞',
+  'adjective': '形容詞',
+  'adverb': '副詞',
+  'preposition': '前置詞'
+} %}
+{% block content %}
+<p>
+  <a href="{{ url_for('add') }}" class="button">＋ 単語を追加</a>
+  <a href="{{ url_for('study_random') }}" class="button">🎲 ランダム学習</a>
+  <a href="{{ url_for('import_csv') }}" class="button">📥 CSVインポート</a>
+  <a href="{{ url_for('export_csv') }}" class="button">📤 CSVエクスポート</a>
+</p>
+
+<table bclass="word-table">
+  <tr>
+    <th>英単語</th>
+    <th>意味</th>
+    <th>品詞</th>
+    <th>例文</th>
+    <th>正答率</th>
+    <th>状態</th>
+    <th>操作</th>
+  </tr>
+
+  {% for word in words %}
+  <tr class="{% if word.is_done %}done-row{% endif %}">
+    <td data-label="英単語">{{ word.english }}</td>
+    <td data-label="意味">{{ word.meaning }}</td>
+    <td data-label="品詞">
+        <span class="pos-badge">{{ pos_map.get(word.part_of_speech, '-') }}</span>
+    </td>
+    <td  class="example-cell" data-label="例文">
+        {% if word.example %}
+            <button
+                class="example-btn"
+                onclick="openExample(`{{ word.example | e }}`)">
+                例文を見る
+            </button>
+        {% else %}
+            -
+        {% endif %}
+    </td>
+    <td data-label="正答率">
+        {% if word.correct_count + word.wrong_count > 0 %}
+            <span class="badge badge-green">
+            {{ (word.correct_count / (word.correct_count + word.wrong_count) * 100) | round(0) }}%
+            </span>
+        {% else %}
+            <span class="badge badge-gray">未回答</span>
+        {% endif %}
+    </td>
+    <td data-label="状態">
+        {% if word.is_done %}
+            <span class="badge badge-green">完了</span>
+        {% else %}
+            <span class="badge badge-orange">未完了</span>
+        {% endif %}
+    </td>
+    <td class="action" data-label="操作">
+        <a href="{{ url_for('study', id=word.id) }}" class="study">学習</a>
+        <a href="{{ url_for('toggle_done', id=word.id) }}" class="done">
+            {% if word.is_done %}未完了{% else %}完了{% endif %}
+        </a>
+        <a href="{{ url_for('edit', id=word.id) }}" class="edit">編集</a>
+        <a href="{{ url_for('delete', id=word.id) }}"
+            class="delete"
+            onclick="return confirm('削除しますか？')">
+            削除
+        </a>
+    </td>
+  </tr>
+  {% endfor %}
+</table>
+
+{% endblock %}
+
+{% block scripts %}
+<script>
+    function openExample(text) {
+        document.getElementById('example-text').innerText = text;
+        document.getElementById('example-modal').style.display = 'block';
+    }
+
+    function closeExample() {
+        document.getElementById('example-modal').style.display = 'none';
+    }
+</script>
+
+{% endblock %}

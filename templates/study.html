@@ -1,0 +1,27 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<h2>学習</h2>
+
+<p><strong>英単語：</strong>{{ word.english }}</p>
+
+<form method="post">
+  <p>
+    意味を入力：<br>
+    <input type="text" name="answer" autofocus required>
+  </p>
+  <button type="submit">答え合わせ</button>
+</form>
+
+{% if result %}
+  <hr>
+  <p>
+    結果：<strong>{{ result }}</strong><br>
+    正解：{{ word.meaning }}
+  </p>
+{% endif %}
+
+<p>
+  <a href="{{ url_for('index') }}">一覧に戻る</a>
+</p>
+{% endblock %}

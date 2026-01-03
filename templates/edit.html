@@ -1,0 +1,30 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<form method="post">
+  <p>
+    英単語：<br>
+    <input type="text" name="english" value="{{ word.english }}" required>
+  </p>
+  <p>
+    意味：<br>
+    <input type="text" name="meaning" value="{{ word.meaning }}" required>
+  </p>
+  <button type="submit">更新</button>
+  <p>
+    品詞：<br>
+    <select name="part_of_speech">
+      <option value="">-- 選択 --</option>
+      <option value="noun" {% if word.part_of_speech == 'noun' %}selected{% endif %}>名詞</option>
+      <option value="verb" {% if word.part_of_speech == 'verb' %}selected{% endif %}>動詞</option>
+      <option value="adjective" {% if word.part_of_speech == 'adjective' %}selected{% endif %}>形容詞</option>
+      <option value="adverb" {% if word.part_of_speech == 'adverb' %}selected{% endif %}>副詞</option>
+    </select>
+  <p>
+    例文：<br>
+    <input type="text" name="example" value="{{ word.example }}">
+  </p>
+</form>
+
+<a href="{{ url_for('index') }}">戻る</a>
+{% endblock %}

@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <title>{{ title }}</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+
+<header class="header">
+  <h1>📘 単語帳アプリ</h1>
+  <nav>
+    <a href="{{ url_for('index') }}">一覧</a>
+    <a href="{{ url_for('study_random') }}">ランダム学習</a>
+    <a href="{{ url_for('add') }}">追加</a>
+  </nav>
+</header>
+
+<main class="container">
+  {% block content %}{% endblock %}
+  
+  <div id="example-modal" class="modal">
+    <div class="modal-content">
+      <span class="close" onclick="closeExample()">×</span>
+      <p id="example-text"></p>
+    </div>
+  </div>
+
+  {% block scripts %}{% endblock %}
+</main>
+
+</body>
+</html>
