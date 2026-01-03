@@ -30,6 +30,11 @@
   <button type="submit">ログイン</button>
 </form>
 
+<hr>
+<a href="{{ url_for('login_google') }}">
+  Googleでログイン
+</a>
+
 {% with messages = get_flashed_messages() %}
   {% if messages %}
     <ul style="color: red;">
@@ -41,7 +46,6 @@
 {% endwith %}
 
 <hr>
-
 <a href="/register">新規登録</a>
 
 </body>

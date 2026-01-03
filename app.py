@@ -25,6 +25,8 @@ from werkzeug.security import (
 import random
 import csv
 import io
+import os
+from authlib.integrations.flask_client import OAuth
 
 _database_initialized = False
 
@@ -33,6 +35,18 @@ app = Flask(__name__)
 app.secret_key = 'secret-key-for-vocab-app'
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///vocab.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+
+# OAuth初期化
+oauth = OAuth(app)
+google = oauth.register(
+    name='google',
+    client_id=os.environ.get('GOOGLE_CLIENT_ID'),
+    client_secret=os.environ.get('GOOGLE_CLIENT_SECRET'),
+    server_metadata_url='https://accounts.google.com/.well-known/openid-configuration',
+    client_kwargs={
+        'scope': 'openid email profile'
+    }
+)
 
 #login初期化
 login_manager = LoginManager()
@@ -59,7 +73,8 @@ class Word(db.Model):
 class User(UserMixin, db.Model):
     id = db.Column(db.Integer, primary_key=True)
     email = db.Column(db.String(255), unique=True, nullable=False)
-    password_hash = db.Column(db.String(255), nullable=False)
+    password_hash = db.Column(db.String(255))
+    google_id = db.Column(db.String(255), unique=True)
 
 # ユーザーロード
 @login_manager.user_loader
@@ -107,6 +122,33 @@ def login():
         flash('メールアドレスまたはパスワードが違います')
 
     return render_template('login.html')
+
+
+# Googleログイン
+@app.route('/login/google')
+def login_google():
+    redirect_uri = url_for('auth_google', _external=True)
+    return google.authorize_redirect(redirect_uri)
+
+# Googleコールバック
+@app.route('/auth/google')
+def auth_google():
+    token = google.authorize_access_token()
+    userinfo = google.get(
+        'https://www.googleapis.com/oauth2/v2/userinfo'
+    ).json()
+    print(userinfo)
+
+    email = userinfo['email']
+    
+    user = User.query.filter_by(email=email).first()
+    if not user:
+        user = User(email=email)
+        db.session.add(user)
+        db.session.commit()
+
+    login_user(user)
+    return redirect(url_for('index'))
 
 # ログアウトルート
 @app.route('/logout')
