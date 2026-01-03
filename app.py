@@ -1,13 +1,31 @@
-from flask import Flask, render_template
+from flask import (
+    Flask,
+    render_template,
+    flash,
+    request,
+    Response,
+    redirect,
+    url_for,
+    session
+)
 from flask_sqlalchemy import SQLAlchemy
-from flask import request, redirect, url_for
-from flask import request
+from flask_login import (
+    UserMixin,
+    LoginManager,
+    login_user,
+    logout_user,
+    login_required,
+    current_user
+)
+from datetime import date
+from werkzeug.security import (
+    generate_password_hash,
+    check_password_hash
+)
 import random
-from flask import session
 import csv
 import io
-from flask import Response
-from datetime import date
+
 _database_initialized = False
 
 app = Flask(__name__)
@@ -16,10 +34,20 @@ app.secret_key = 'secret-key-for-vocab-app'
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///vocab.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
+#login初期化
+login_manager = LoginManager()
+login_manager.login_view = 'login'
+login_manager.init_app(app)
+
+
 db = SQLAlchemy(app)
+
+with app.app_context():
+    db.create_all()
 
 class Word(db.Model):
     id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
     english = db.Column(db.String(100), nullable=False)
     meaning = db.Column(db.String(200), nullable=False)
     part_of_speech = db.Column(db.String(50))
@@ -28,18 +56,80 @@ class Word(db.Model):
     wrong_count = db.Column(db.Integer, default=0)
     is_done = db.Column(db.Boolean, default=False)
 
+class User(UserMixin, db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    email = db.Column(db.String(255), unique=True, nullable=False)
+    password_hash = db.Column(db.String(255), nullable=False)
+
+# ユーザーロード
+@login_manager.user_loader
+def load_user(user_id):
+    return User.query.get(int(user_id))
+
+# ユーザー登録
+@app.route('/register', methods=['GET', 'POST'])
+def register():
+    if request.method == 'POST':
+        email = request.form['email']
+        password = request.form['password']
+
+        if User.query.filter_by(email=email).first():
+            flash('既に登録されています')
+            return redirect('/register')
+
+        user = User(
+            email=email,
+            password_hash = generate_password_hash(
+                password,
+                method='pbkdf2:sha256'
+            )
+        )
+        db.session.add(user)
+        db.session.commit()
+        return redirect('/login')
+
+    return render_template('register.html')
+
+# ログインルート
+@app.route('/login', methods=['GET', 'POST'])
+def login():
+    if request.method == 'POST':
+        email = request.form.get('email')
+        password = request.form.get('password')
+        print(request.method)
+        print(request.form)
+        user = User.query.filter_by(email=email).first()
+
+        if user and check_password_hash(user.password_hash, password):
+            login_user(user)
+            return redirect('/')
+
+        flash('メールアドレスまたはパスワードが違います')
+
+    return render_template('login.html')
+
+# ログアウトルート
+@app.route('/logout')
+@login_required
+def logout():
+    logout_user()
+    return redirect('/login')
+
+# DBセットアップ
 @app.before_request
 def setup_db():
     global _database_initialized
     if not _database_initialized:
         # ここに最初の1回だけやりたい処理を書く
         # db.create_all() など
+        db.create_all()
         _database_initialized = True
 
 @app.route('/') #一覧
+@login_required #ログイン強制
 def index():
-    words = Word.query.all()
-    return render_template('index.html', title='単語一覧', words=words)
+    words = Word.query.filter_by(user_id=current_user.id).all()
+    return render_template('index.html', words=words)
 
 @app.route('/add', methods=['GET', 'POST'])
 def add():
