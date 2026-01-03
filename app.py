@@ -75,6 +75,7 @@ class User(UserMixin, db.Model):
     email = db.Column(db.String(255), unique=True, nullable=False)
     password_hash = db.Column(db.String(255))
     google_id = db.Column(db.String(255), unique=True)
+    words = db.relationship('Word', backref='user', lazy=True)
 
 # ユーザーロード
 @login_manager.user_loader
@@ -140,7 +141,7 @@ def auth_google():
     print(userinfo)
 
     email = userinfo['email']
-    
+
     user = User.query.filter_by(email=email).first()
     if not user:
         user = User(email=email)
@@ -152,7 +153,6 @@ def auth_google():
 
 # ログアウトルート
 @app.route('/logout')
-@login_required
 def logout():
     logout_user()
     return redirect('/login')
@@ -174,13 +174,15 @@ def index():
     return render_template('index.html', words=words)
 
 @app.route('/add', methods=['GET', 'POST'])
+@login_required #ログイン強制
 def add():
     if request.method == 'POST':
         word = Word(
             english=request.form['english'],
             meaning=request.form['meaning'],
             part_of_speech=request.form['part_of_speech'],
-            example=request.form['example']
+            example=request.form['example'],
+            user_id=current_user.id
         )
         db.session.add(word)
         db.session.commit()
@@ -191,14 +193,20 @@ def add():
 
 @app.route('/delete/<int:id>') #削除
 def delete(id):
-    word = Word.query.get_or_404(id)
+    word = Word.query.filter_by(
+        id,
+        user_id=current_user.id
+    ).first_or_404()
     db.session.delete(word)
     db.session.commit()
     return redirect(url_for('index'))
 
 @app.route('/edit/<int:id>', methods=['GET', 'POST']) #編集
 def edit(id):
-    word = Word.query.get_or_404(id)
+    word = Word.query.filter_by(
+        id,
+        user_id=current_user.id
+    ).first_or_404()
 
     if request.method == 'POST':
         word.english = request.form['english']
@@ -243,6 +251,7 @@ def toggle_done(id):
 
 
 @app.route('/study/random', methods=['GET', 'POST'])
+@login_required
 def study_random():
     # POST時：同じ単語で判定する
     if request.method == 'POST':
@@ -250,7 +259,10 @@ def study_random():
         if not word_id:
             return redirect(url_for('study_random'))
 
-        word = Word.query.get_or_404(word_id)
+        word = Word.query.filter_by(
+            id=word_id,
+            user_id=current_user.id
+        ).first_or_404()
 
         user_answer = request.form['answer'].strip()
 
@@ -272,7 +284,10 @@ def study_random():
         )
 
     # GET時：ランダムに単語を選ぶ
-    words = Word.query.filter_by(is_done=False).all()
+    words = Word.query.filter_by(
+        user_id=current_user.id,
+        is_done=False
+    ).all()
 
     if not words:
         session.pop('last_word_id', None)
@@ -322,7 +337,8 @@ def import_csv():
                 english=english,
                 meaning=row.get('meaning', '').strip(),
                 part_of_speech=row.get('part_of_speech'),
-                example=row.get('example')
+                example=row.get('example'),
+                user_id=current_user.id
             )
             db.session.add(word)
 
